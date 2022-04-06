@@ -1,0 +1,58 @@
+#! /bin/sh
+
+
+pgrep -x sxhkd > /dev/null || sxhkd &
+
+$HOME/.screenlayout/monitor.sh 
+#$HOME/.config/polybar/launch.sh
+$HOME/.config/polybar/launch.sh --forest
+#$ bash ~/.config/polybar/launch.sh --hack
+nitrogen --restore &
+compton &
+pkill dunst
+dunst -conf ~/.config/dunst/dunstrc &
+
+## Get colors from .Xresources -------------------------------#
+xrdb ~/.Xresources
+getcolors () {
+        FOREGROUND=$(xrdb -query | grep 'foreground:'| awk '{print $NF}')
+        BACKGROUND=$(xrdb -query | grep 'background:'| awk '{print $NF}')
+        BLACK=$(xrdb -query | grep 'color0:'| awk '{print $NF}')
+        RED=$(xrdb -query | grep 'color1:'| awk '{print $NF}')
+        GREEN=$(xrdb -query | grep 'color2:'| awk '{print $NF}')
+        YELLOW=$(xrdb -query | grep 'color3:'| awk '{print $NF}')
+        BLUE=$(xrdb -query | grep 'color4:'| awk '{print $NF}')
+        MAGENTA=$(xrdb -query | grep 'color5:'| awk '{print $NF}')
+        CYAN=$(xrdb -query | grep 'color6:'| awk '{print $NF}')
+        WHITE=$(xrdb -query | grep 'color7:'| awk '{print $NF}')
+}
+getcolors
+
+xsetroot -cursor_name left_ptr
+
+## Configurations -------------------------------#
+bspc monitor -d I II III IV V
+
+bspc config border_width         1
+bspc config window_gap          10
+bspc config split_ratio          0.50
+
+bspc config focused_border_color "$BLUE" 
+bspc config normal_border_color "$BACKGROUND"
+bspc config active_border_color "$MAGENTA"
+bspc config presel_feedback_color "$GREEN"
+
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+bspc config paddingless_monocle true
+bspc config single_monocle false
+bspc config focus_follows_pointer true
+
+
+
+bspc rule -a Gimp desktop='^8' state=floating follow=on
+bspc rule -a Chromium desktop='^2'
+bspc rule -a mplayer2 state=floating
+bspc rule -a Kupfer.py focus=on
+bspc rule -a Screenkey manage=off
+bscp rule -a galculator state=pseudo_tiled
